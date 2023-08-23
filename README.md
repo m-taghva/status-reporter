@@ -5,7 +5,7 @@ workload schema:
 <img src="status-reporter.png" width="1271" height="463"/>
 
 related to these projects: https://github.com/m-taghva/influxdb.git
-step by step usage:
+<br>step by step usage:</br>
    
       
             -put your time range in time_rangs_taimestamp.txt like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
