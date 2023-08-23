@@ -5,7 +5,12 @@ workload schema:
 <img src="status-reporter.png" width="1271" height="463"/>
 
 related to these projects: https://github.com/m-taghva/influxdb.git
-
-      
-       
+step by step usage:
+      -put your time range in time_rangs_taimestamp.txt like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
+      -put your monitored host or VM name in host_names.txt like this: name (line by line)
+      -write ip and port of influxdb in ip_port_list.txt like this: localhost:8086
+      -write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex * in names)
+      -your metric file prefix can use as expressions
+      after complete all files start app with this command:
+      # python3 regex mean_metric_list,sum_metric_list, ... 
       
