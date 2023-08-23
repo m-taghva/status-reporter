@@ -90,6 +90,6 @@ for file_name in metric_files:
 print("Processed files:",",".join(processed_files))
 
 # Call the other bash script with the input file names as an argument
-other_script_command = f'./api-query-CR-utc10.sh {input_file_names}'
+other_script_command = f'./status-reporter.sh {input_file_names}'
 os.system(other_script_command)
 
