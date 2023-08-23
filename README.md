@@ -4,6 +4,5 @@
        related to these projects: https://github.com/m-taghva/influxdb.git
        # This program has an integrated structure and its modules are interdependent and work together #
       
-       <a href="https://github.com/m-taghva/status-reporter/blob/main/status-reporter.png"> workload schema </a>
-       <a href="https://www.w3schools.com/">Visit W3Schools.com!</a>
+       [I'm an inline-style link](https://www.google.com)
       
