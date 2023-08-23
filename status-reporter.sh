@@ -110,7 +110,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                         # Get the query2 output and store it in a variable
                         query2_output=$(eval "$query2_curl_command")
                       
-                        python3 image-render16.py "$query2_output" "$host_name"
+                        python3 image-renderer.py "$query2_output" "$host_name"
 
                    done < "$metric_file"
                 else
