@@ -5,4 +5,5 @@
        # This program has an integrated structure and its modules are interdependent and work together #
       
        <a href="https://github.com/m-taghva/status-reporter/blob/main/status-reporter.png"> workload schema </a>
+       <a href="https://www.w3schools.com/">Visit W3Schools.com!</a>
       
