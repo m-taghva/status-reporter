@@ -84,6 +84,7 @@ for file_name in metric_files:
         except FileNotFoundError:
             print(f"File '{file_name}' not found.")
     else:
+        print("======================================================")
         print(f"Skipping metric file: {file_name} (no processing)")
 
 # Print processed file names separated by comma
