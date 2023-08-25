@@ -2,7 +2,7 @@
 <h4>influxdb API tool for sending query automatically and save some documents for monitoring.</h4>
 <h4># This program has an integrated structure and its modules are interdependent and work together #</h4>
 workload schema:
-<img src="reporter.png" width="1200" height="400"/>
+<img src="report.png" width="1659" height="561"/>
 
 related to these projects: https://github.com/m-taghva/influxdb.git
 <br>step by step usage:</br>
