@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python3 tz-to-utc.py
-sleep 2
+sleep 5
 
 # Set the variables for the script
 TIME_RANGE_FILE="time_ranges_utc.txt"
