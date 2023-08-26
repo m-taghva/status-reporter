@@ -86,6 +86,7 @@ for file_name in metric_files:
     else:
         print("======================================================")
         print(f"Skipping metric file: {file_name} (no processing)")
+        print("======================================================")
 
 # Print processed file names separated by comma
 print("Processed files:",",".join(processed_files))
