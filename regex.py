@@ -89,7 +89,9 @@ for file_name in metric_files:
         print("======================================================")
 
 # Print processed file names separated by comma
+print("======================================================")
 print("Processed files:",",".join(processed_files))
+print("======================================================")
 
 # Call the other bash script with the input file names as an argument
 other_script_command = f'./status-reporter.sh {input_file_names}'
