@@ -1,6 +1,8 @@
 import sys
 import json
 import matplotlib.pyplot as plt
+import matplotlib 
+matplotlib.use('Agg')
 from datetime import datetime, timedelta
 import pytz
 import os
