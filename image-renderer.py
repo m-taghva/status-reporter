@@ -82,7 +82,7 @@ for entry in data["results"]:
         plt.grid(True)
         plt.tight_layout()
 
-        output_filename = f"{server_name}_{metric_name.replace('.', '_')}_{value_column}_{time_range_start.strftime('%Y%m%d_%H%M%S')}_{time_range_end.strftime('%Y%m%d_%H%M%S')}_graph.jpg"
+        output_filename = f"{server_name}_{metric_name.replace('.', '_')}_{value_column}_{time_range_start.strftime('%Y%m%d_%H%M%S')}_{time_range_end.strftime('%Y%m%d_%H%M%S')}_graph.png"
         output_filepath = os.path.join(server_dir, output_filename)
         
         # Update the progress bar description to show the image name
