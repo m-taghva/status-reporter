@@ -1,2 +1,2 @@
 netdata.system.cpu.system
-netdata.system.cpu.idle
+netdata.system.cpu.\\w*
