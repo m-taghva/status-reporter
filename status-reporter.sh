@@ -80,7 +80,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                         metric_prefix=$(basename "$metric_file" _metric_list.txt)
                         
                         # Construct the curl command with the current metric_name, start time, end time, host, IP address, and port
-                        curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM \\\"${metric_name}\\\" WHERE (\\\"host\\\" =~ /^${host_name}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}'\""
+                        curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM \\\"${metric_name}\\\" WHERE (\\\"host\\\" =~ /^${host_name}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' fill(none)\""
 
                         # Execute the curl command and get the values
                         query_result=$(eval "${curl_command}")
