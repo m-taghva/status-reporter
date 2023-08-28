@@ -19,7 +19,8 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - after complete all files start app with this command
         # python3 regex.py mean_metric_list,sum_metric_list, ... 
     ======================================================
-    - analyzer can work separately and manually : python3 analyzer.py /csv-path  transformation-directory
+    - analyzer can work separately and manually :
+        # python3 analyzer.py /csv-path  transformation-directory
     - in analyzer you can do sum or avg on csv columns and make new csv with transformation.
     - make t*.txt file for selecting columns and transform operation. 
     - first line of these files is operastin-new column name like : sum-my.cpu
