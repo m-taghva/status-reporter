@@ -14,7 +14,7 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - put your time range in time_rangs_taimestamp.txt like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
     - put your monitored host or VM name in host_names.txt like this: name (line by line)
     - write ip and port of influxdb in ip_port_list.txt like this: localhost:8086
-    - write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex \\w* in names)
+    - write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex by \\w* in names)
     - your metric file prefix can use as expressions
     - you can change DB name on top code of the scripts. 
     ======================================================
