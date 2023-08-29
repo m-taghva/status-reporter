@@ -9,7 +9,7 @@ related to these projects: https://github.com/m-taghva/influxdb.git
    
     - Install dependencies:
         # apt install jq / yum install jq 
-          # pip install pytz datetime matplotlib tqdm  
+          # pip install pytz datetime matplotlib pandas tqdm  
     ======================================================
     - put your time range in time_rangs_taimestamp.txt like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
     - put your monitored host or VM name in host_names.txt like this: name (line by line)
