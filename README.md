@@ -18,7 +18,7 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - your metric file prefix can use as expressions
     - you can change DB name on top code of the scripts. 
     ======================================================
-    - after complete all files start app with this command
+    - after complete all files start app with this command:
         # python3 regex.py mean_metric_list,sum_metric_list, ... 
     ======================================================
     - analyzer can work separately and manually :
