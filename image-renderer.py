@@ -1,11 +1,10 @@
 import sys
 import json
+import os
+os.environ['MPLBACKEND'] = 'Agg'
 import matplotlib.pyplot as plt
-import matplotlib 
-matplotlib.use('Agg')
 from datetime import datetime, timedelta
 import pytz
-import os
 import shutil
 from tqdm import tqdm
 
