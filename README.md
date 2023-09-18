@@ -17,9 +17,10 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex by \\w* in names)
     - your metric file prefix can use as expressions
     - you can change DB name on top code of the scripts. 
+    - you need to give time and metric files and customize path to query_result for saving outputs.
     ======================================================
     - after complete all files start app with this command:
-        # python3 regex.py mean_metric_list,sum_metric_list, ... 
+        # python3 regex.py mean_metric_list,sum_metric_list, ... ,time_ranges_utc.txt,path to query_result
     ======================================================
     - analyzer can work separately and manually :
         # python3 analyzer.py /csv-path  transformation-directory
