@@ -30,6 +30,9 @@ transformation_directory = sys.argv[2]
 # Initialize CSV data
 csv_intermediate = pd.read_csv(csv_original)
 
+# Store the names of selected columns from the t*.txt files
+selected_column_names = set()
+
 # Iterate through txt files in the transformation directory
 for txt_file in os.listdir(transformation_directory):
     if txt_file.startswith('t') and txt_file.endswith('.txt'):
@@ -38,16 +41,21 @@ for txt_file in os.listdir(transformation_directory):
         
         # Process CSV data
         csv_intermediate = process_csv_file(csv_intermediate, operation, new_column_name, selected_columns)
+        
+        # Store the selected column names
+        selected_column_names.update(selected_columns)
 
-# Remove all columns except "start time," "end time," and columns with "sum." or "avg." prefixes
-keep_columns = ['Start_Time','End_Time'] + [col for col in csv_intermediate.columns if col.startswith('sum.') or col.startswith('avg.')]
+# Determine the columns to keep in the final CSV
+keep_columns = [col for col in csv_intermediate.columns if col not in selected_column_names]
+
+# Create the final CSV with the selected columns
 csv_final = csv_intermediate[keep_columns]
 
 # Save the final CSV data as the last CSV file
 final_output_csv_name = f"{os.path.splitext(os.path.basename(csv_original))[0]}-{os.path.basename(transformation_directory)}.csv"
 final_output_csv_path = os.path.join(os.path.dirname(csv_original), final_output_csv_name)
 csv_final.to_csv(final_output_csv_path, index=False)
-print(f"Final Analyzed csv file: {final_output_csv_path}")
+print(f"Final Analyzed CSV file: {final_output_csv_path}")
 
 # Remove the intermediate CSV file
 intermediate_csv_path = os.path.join(os.path.dirname(csv_original), "intermediate.csv")
