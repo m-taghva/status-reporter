@@ -13,9 +13,10 @@ class bcolors:
     END = '\033[0m'
 print (f"{bcolors.YELLOW}Query send ! wait for generate new image{bcolors.END}")
 
-# Read InfluxDB query result and server name from command-line arguments
+# Read InfluxDB query result, server name, and parent directory from command-line arguments
 query_output = sys.argv[1]
 server_name = sys.argv[2]
+parent_dir = sys.argv[3]  # The user-specified parent directory
 
 # Process the JSON data from the InfluxDB query
 data = json.loads(query_output)
@@ -32,7 +33,7 @@ def convert_to_tehran_time(utc_time):
     return tehran_time
 
 # Create a directory for the server's images if it doesn't exist
-server_dir = os.path.join("query_results", f"{server_name}-images")
+server_dir = os.path.join(parent_dir, "query_results", f"{server_name}-images")
 if not os.path.exists(server_dir):
     os.makedirs(server_dir)
 
