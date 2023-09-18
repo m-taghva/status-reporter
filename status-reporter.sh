@@ -4,8 +4,8 @@ python3 tz-to-utc.py
 sleep 5
 
 # Set the variables for the script
-HOST_NAME_FILE="./../conf/host_names.txt"
-IP_PORT_FILE="./../conf/ip_port_list.txt"
+HOST_NAME_FILE="host_names.txt"
+IP_PORT_FILE="ip_port_list.txt"
 DATABASE="opentsdb"
 
 # for bold font
