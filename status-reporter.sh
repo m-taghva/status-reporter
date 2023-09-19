@@ -8,9 +8,11 @@ HOST_NAME_FILE="host_names.txt"
 IP_PORT_FILE="ip_port_list.txt"
 DATABASE="opentsdb"
 
-# for bold font
+# for font
 BOLD="\e[1m"
 RESET="\e[0m"
+YELLOW="\033[1;33m"
+END="\033[0m"
 
 # Read metric and time file paths/names from the user
 FILES_ARG="$1"
@@ -140,7 +142,7 @@ for host_name in "${HOST_NAMES[@]}"; do
     done
 done
 echo ""
-echo -ne "${BOLD}Progress: |[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]| 100% \n ${RESET}"
+echo -ne "Progress: ${YELLOW}|[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]|${END} 100% \n"
 echo ""
-echo -e "${BOLD}CSV and Image are saved in the '$OUTPUT_PARENT_DIR' directory for each host${RESET}"
+echo -e "${BOLD}CSV and Image are saved in the ${RESET}${YELLOW}'$OUTPUT_PARENT_DIR'${END}${BOLD} directory for each host ${RESET}"
 echo ""
