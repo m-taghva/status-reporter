@@ -112,7 +112,8 @@ for host_name in "${HOST_NAMES[@]}"; do
 
                 # Append the line_values to the CSV file
                 echo "$line_values" >> "$output_csv"
-
+                echo "Add metrics to CSV, please wait ..."
+                
                 # Loop through each metric file for the second query
                 for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
                     if [[ -f "$metric_file" ]]; then
@@ -139,5 +140,5 @@ for host_name in "${HOST_NAMES[@]}"; do
 done
 
 # Print completion message after the progress bar
-echo -ne "${BOLD}Progress: [###########################################################] 100% \n ${RESET}"
+echo -ne "${BOLD}Progress: |//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//| 100% \n ${RESET}"
 echo -e "${BOLD}CSV and Image are saved in the '$OUTPUT_PARENT_DIR' directory for each host${RESET}"
