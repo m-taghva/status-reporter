@@ -99,8 +99,8 @@ for host_name in "${HOST_NAMES[@]}"; do
                             curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM \\\"${metric_name}\\\" WHERE (\\\"host\\\" =~ /^${host_name}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' fill(none)\""
 
                             # Execute the curl command and get the values
-                            query_result=$(eval "${curl_command} 2>/dev/null")
-                            values=$(echo "$query_result" | jq -r '.results[0].series[0].values[] | .[1]')
+                            query_result=$(eval "${curl_command}")
+                            values=$(echo "$query_result" | jq -r '.results[0].series[0].values[] | .[1]' 2>/dev/null)
 
                             # Append the values to the line_values string
                             line_values+=",$values"
