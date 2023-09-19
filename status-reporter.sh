@@ -140,8 +140,7 @@ for host_name in "${HOST_NAMES[@]}"; do
     done
 done
 echo ""
-# Print completion message after the progress bar
-echo -ne "${BOLD}Progress: |<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>| 100% \n ${RESET}"
+echo -ne "${BOLD}Progress: |[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]| 100% \n ${RESET}"
 echo ""
 echo -e "${BOLD}CSV and Image are saved in the '$OUTPUT_PARENT_DIR' directory for each host${RESET}"
 echo ""
