@@ -5,7 +5,7 @@ import pandas as pd
 # Read operation and new column name from the txt file
 def read_txt_file(file_path):
     with open(file_path, 'r') as txt_file:
-        operation, new_column_name = txt_file.readline().strip().split('-')
+        operation, new_column_name = txt_file.readline().strip().split(':')
         selected_columns = txt_file.read().splitlines()
     return operation, new_column_name, selected_columns
 
