@@ -146,3 +146,4 @@ echo -ne "Progress: ${YELLOW}|||||||||||||||||||||||||||||||||||||||||||||||||||
 echo ""
 echo -e "${BOLD}CSV and Image are saved in the ${RESET}${YELLOW}'$OUTPUT_PARENT_DIR'${END}${BOLD} directory for each host ${RESET}"
 echo ""
+echo "========================================"
