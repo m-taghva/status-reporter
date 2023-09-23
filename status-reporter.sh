@@ -21,6 +21,9 @@ METRIC_FILES_ARRAY=()
 TIME_RANGE_FILES=()
 PARENT_DIR=""
 
+echo ""
+echo "========================================"
+
 for file in "${INPUT_FILES_ARRAY[@]}"; do
     # Check if the file name contains "metric" to identify metric files
     if [[ $file == *"metric"* ]]; then
