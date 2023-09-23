@@ -1,11 +1,8 @@
 #!/bin/bash
 
-python3 tz-to-utc.py
-sleep 5
-
 # Set the variables for the script
-HOST_NAME_FILE="host_names.txt"
-IP_PORT_FILE="ip_port_list.txt"
+HOST_NAME_FILE="./../conf/host_names.txt"
+IP_PORT_FILE="./../conf/ip_port_list.txt"
 DATABASE="opentsdb"
 
 # for font
@@ -40,11 +37,11 @@ done
 IFS=$'\n' read -d '' -r -a HOST_NAMES < "${HOST_NAME_FILE}"
 IFS=$'\n' read -d '' -r -a IP_PORTS < "${IP_PORT_FILE}"
 
-# Function to convert UTC timestamp to Tehran time
-convert_to_tehran() {
-    local utc_timestamp="$1"
-    local tehran_timestamp=$(TZ='Asia/Tehran' date -d "${utc_timestamp}" +"%Y-%m-%d %H:%M:%S")
-    echo "$tehran_timestamp"
+# Function to convert Tehran timestamp to UTC
+convert_tehran_to_utc() {
+    local tehran_timestamp="$1"
+    local utc_timestamp=$(date -u --date=@$(date "+%s" --date="${tehran_timestamp}") +%Y-%m-%dT%H:%M:%SZ)
+    echo "$utc_timestamp"
 }
 
 # Create the output parent directory if it doesn't exist
@@ -78,11 +75,11 @@ for host_name in "${HOST_NAMES[@]}"; do
         # Read time ranges from the time file
         while IFS= read -r line; do
             # Split the start and end times from the line
-            IFS=',' read -r start_time_utc end_time_utc <<< "$line"
+            IFS=',' read -r start_time_tehran end_time_tehran <<< "$line"
 
-            # Convert the timestamps to Tehran time
-            start_time_tehran=$(convert_to_tehran "$start_time_utc")
-            end_time_tehran=$(convert_to_tehran "$end_time_utc")
+            # Convert the timestamps to UTC for queries
+            start_time_utc=$(convert_tehran_to_utc "$start_time_tehran")
+            end_time_utc=$(convert_tehran_to_utc "$end_time_tehran")
 
             for ip_port in "${IP_PORTS[@]}"; do
                 # Split IP and PORT from the IP:PORT pair
@@ -114,7 +111,7 @@ for host_name in "${HOST_NAMES[@]}"; do
 
                 # Append the line_values to the CSV file
                 echo "$line_values" >> "$output_csv"
-                
+
                 echo -e "${BOLD}Add metrics to CSV, please wait ...${RESET}"
                 
                 # Loop through each metric file for the second query
