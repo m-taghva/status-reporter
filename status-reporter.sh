@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set the variables for the script
-HOST_NAME_FILE="./../conf/host_names.txt"
-IP_PORT_FILE="./../conf/ip_port_list.txt"
+HOST_NAME_FILE="host_names.txt"
+IP_PORT_FILE="ip_port_list.txt"
 DATABASE="opentsdb"
 
 # for font
@@ -43,7 +43,9 @@ IFS=$'\n' read -d '' -r -a IP_PORTS < "${IP_PORT_FILE}"
 # Function to convert Tehran timestamp to UTC
 convert_tehran_to_utc() {
     local tehran_timestamp="$1"
-    local utc_timestamp=$(date -u --date=@$(date "+%s" --date="${tehran_timestamp}") +%Y-%m-%dT%H:%M:%SZ)
+    local tehran_timestamp_seconds=$(date -d "${tehran_timestamp}" "+%s")
+    local utc_timestamp_seconds=$((tehran_timestamp_seconds + 120)) 
+    local utc_timestamp=$(date -u -d "@${utc_timestamp_seconds}" "+%Y-%m-%dT%H:%M:%SZ")
     echo "$utc_timestamp"
 }
 
@@ -89,7 +91,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                 ip_address="${ip_port%:*}"
                 port="${ip_port#*:}"
 
-                line_values="$start_time_tehran,$end_time_tehran"
+                line_values=$(date -d "$start_time_tehran 2min" +"%Y-%m-%d %H:%M:%S"),$(date -d "$end_time_tehran 2min"  +"%Y-%m-%d %H:%M:%S")
 
                 for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
                     if [[ -f "$metric_file" ]]; then
