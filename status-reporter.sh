@@ -149,6 +149,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                     fi
                 done
             done
+            fi
         done < <(grep -v '^[[:space:]]*$' "$time_file")
     done
 done
