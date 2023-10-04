@@ -5,6 +5,10 @@ HOST_NAME_FILE="host_names.txt"
 IP_PORT_FILE="ip_port_list.txt"
 DATABASE="opentsdb"
 
+# increase or reduce time (use second)
+START_TIME_SUM="60"
+END_TIME_SUBTRACT="60"
+
 # for font
 BOLD="\e[1m"
 RESET="\e[0m"
@@ -13,7 +17,6 @@ END="\033[0m"
 
 # Read metric and time file paths/names from the user
 FILES_ARG="$1"
-
 # Split the input files by commas
 IFS=',' read -r -a INPUT_FILES_ARRAY <<< "$FILES_ARG"
 
@@ -41,12 +44,36 @@ IFS=$'\n' read -d '' -r -a HOST_NAMES < "${HOST_NAME_FILE}"
 IFS=$'\n' read -d '' -r -a IP_PORTS < "${IP_PORT_FILE}"
 
 # Function to convert Tehran timestamp to UTC
-convert_tehran_to_utc() {
-    local tehran_timestamp="$1"
-    local tehran_timestamp_seconds=$(date -d "${tehran_timestamp}" "+%s")
-    local utc_timestamp_seconds=$((tehran_timestamp_seconds + 120)) 
-    local utc_timestamp=$(date -u -d "@${utc_timestamp_seconds}" "+%Y-%m-%dT%H:%M:%SZ")
-    echo "$utc_timestamp"
+convert_tehran_to_utc_start() {
+    local tehran_timestamp_st="$1"
+    local tehran_timestamp_seconds_st=$(date -d "${tehran_timestamp_st}" "+%s")
+    local utc_timestamp_seconds_st=$((tehran_timestamp_seconds_st + "$START_TIME_SUM")) 
+    local utc_timestamp_st=$(date -u -d "@${utc_timestamp_seconds_st}" "+%Y-%m-%dT%H:%M:%SZ")
+    echo "$utc_timestamp_st"
+}
+
+convert_tehran_to_utc_end() {
+    local tehran_timestamp_ed="$1"
+    local tehran_timestamp_seconds_ed=$(date -d "${tehran_timestamp_ed}" "+%s")
+    local utc_timestamp_seconds_ed=$((tehran_timestamp_seconds_ed - "$END_TIME_SUBTRACT")) 
+    local utc_timestamp_ed=$(date -u -d "@${utc_timestamp_seconds_ed}" "+%Y-%m-%dT%H:%M:%SZ")
+    echo "$utc_timestamp_ed"
+}
+
+tehran_time_csv_st() {
+    local tehran_timestamp_csv_st="$1"
+    local tehran_timestamp_seconds_csv_st=$(date -d "${tehran_timestamp_csv_st}" "+%s")
+    local new_tehran_timestamp_seconds_csv_st=$((tehran_timestamp_seconds_csv_st + "$START_TIME_SUM"))
+    local new_tehran_timestamp_csv_st=$(date -d "@${new_tehran_timestamp_seconds_csv_st}" "+%Y-%m-%d %H:%M:%S") 
+    echo "$new_tehran_timestamp_csv_st"
+}
+
+tehran_time_csv_ed() {
+    local tehran_timestamp_csv_ed="$1"
+    local tehran_timestamp_seconds_csv_ed=$(date -d "${tehran_timestamp_csv_ed}" "+%s")
+    local new_tehran_timestamp_seconds_csv_ed=$((tehran_timestamp_seconds_csv_ed - "$END_TIME_SUBTRACT")) 
+    local new_tehran_timestamp_csv_ed=$(date -d "@${new_tehran_timestamp_seconds_csv_ed}" "+%Y-%m-%d %H:%M:%S") 
+    echo "$new_tehran_timestamp_csv_ed"
 }
 
 # Create the output parent directory if it doesn't exist
@@ -92,15 +119,15 @@ for host_name in "${HOST_NAMES[@]}"; do
             IFS=',' read -r start_time_tehran end_time_tehran <<< "$line"
 
             # Convert the timestamps to UTC for queries
-            start_time_utc=$(convert_tehran_to_utc "$start_time_tehran")
-            end_time_utc=$(convert_tehran_to_utc "$end_time_tehran")
-
+            start_time_utc=$(convert_tehran_to_utc_start "$start_time_tehran")
+            end_time_utc=$(convert_tehran_to_utc_end "$end_time_tehran")
+           
             for ip_port in "${IP_PORTS[@]}"; do
                 # Split IP and PORT from the IP:PORT pair
                 ip_address="${ip_port%:*}"
                 port="${ip_port#*:}"
 
-                line_values=$(date -d "$start_time_tehran 2min" +"%Y-%m-%d %H:%M:%S"),$(date -d "$end_time_tehran 2min"  +"%Y-%m-%d %H:%M:%S")
+                line_values=$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")
 
                 for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
                     if [[ -f "$metric_file" ]]; then
@@ -114,7 +141,6 @@ for host_name in "${HOST_NAMES[@]}"; do
                             # Execute the curl command and get the values
                             query_result=$(eval "${curl_command}")
                             values=$(echo "$query_result" | jq -r '.results[0].series[0].values[] | .[1]' 2>/dev/null)
-
                             # Append the values to the line_values string
                             line_values+=",$values"
                         done < "$metric_file"
