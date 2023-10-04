@@ -69,16 +69,25 @@ for host_name in "${HOST_NAMES[@]}"; do
 
     for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
         while IFS= read -r metric_name; do
+            # Remove spaces from the metric name
+            metric_name="${metric_name// /}"
+            # Check if the metric name is not empty (removes blank lines)
+            if [ -n "$metric_name" ]; then
             # Extract the prefix from the metric filename
             metric_prefix=$(basename "$metric_file" _metric_list.txt)
             header="${header},${metric_prefix}_${metric_name#netdata.}"
-        done < "$metric_file"
+            fi
+        done < <(grep -v '^[[:space:]]*$' "$metric_file")
     done
     echo "$header" > "$output_csv"
 
     for time_file in "${TIME_RANGE_FILES[@]}"; do
         # Read time ranges from the time file
         while IFS= read -r line; do
+            # Remove extra spaces
+            line="$(echo "$line" | tr -s ' ')"
+            # Check if the line is not empty (removes blank lines)
+            if [ -n "$line" ]; then
             # Split the start and end times from the line
             IFS=',' read -r start_time_tehran end_time_tehran <<< "$line"
 
@@ -140,7 +149,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                     fi
                 done
             done
-        done < "$time_file"
+        done < <(grep -v '^[[:space:]]*$' "$time_file")
     done
 done
 echo ""
