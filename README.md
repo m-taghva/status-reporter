@@ -20,6 +20,7 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - you need to give time and metric files and customize path to query_result for saving outputs.
     ======================================================
     - after complete all files start app with this command:
+        (optional) #./status-reporter.sh metric_list.txt,time.txt,path to query_result
         # python3 regex.py mean_metric_list,sum_metric_list, ... ,time_ranges_utc.txt,path to query_result
     ======================================================
     - analyzer can work separately and manually :
@@ -29,4 +30,8 @@ related to these projects: https://github.com/m-taghva/influxdb.git
     - first line of these files is operastin-new column name like : sum-my.cpu
     - other lines are selected columns.
     - new file is made in input csv directory and name is orginal csv name-transformation directory.csv
-    
+    ======================================================
+    - csv-merger.py is a experimental script and just use in some situations.
+    - usage:
+        # python3 csv-merger.py <path to parent of all query_results>
+    - it can include directory name in to the merged of all csv.
