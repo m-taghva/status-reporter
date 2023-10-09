@@ -50,15 +50,15 @@ def merge_csv_files(target_directory_path, output_csv_writer, extracted_data, fi
 def main():
     # Check if the correct number of command-line arguments is provided
     if len(sys.argv) != 2:
-        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file>")
+        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file or *-csv>,<csv name or *.csv>")
         exit(1)
 
     # Get the command-line argument containing directory paths
     input_paths = sys.argv[1].split(',')
 
-    # Verify if two paths are provided
+    # Verify if tree path are provided
     if len(input_paths) != 3:
-        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file>,<csv name>")
+        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file or *-csv>,<csv name or *.csv>")
         exit(1)
 
     # Get the path to the directory containing CSV files from the user
