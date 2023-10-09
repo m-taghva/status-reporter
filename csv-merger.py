@@ -23,9 +23,9 @@ def read_csv_data(csv_file_path):
         input_data = list(csv_reader)  # Read the entire data into a list
     return headers, input_data
 
-def merge_csv_files(target_directory_path, output_csv_writer, extracted_data, first_target_directory):
+def merge_csv_files(target_directory_path, output_csv_writer, extracted_data, first_target_directory, second_input_csv_path, second_csv):
     # Find all CSV files inside the target directory
-    csv_file_paths = glob(os.path.join(target_directory_path, 'query_results', '*-csv', '*.csv'))
+    csv_file_paths = glob(os.path.join(target_directory_path, 'query_results', second_input_csv_path, second_csv))
 
     if not csv_file_paths:
         print(f"No CSV files found in {target_directory_path}")
@@ -50,11 +50,21 @@ def merge_csv_files(target_directory_path, output_csv_writer, extracted_data, fi
 def main():
     # Check if the correct number of command-line arguments is provided
     if len(sys.argv) != 2:
-        print("Usage: python script.py <path to directory containing CSV files>")
+        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file>")
+        exit(1)
+
+    # Get the command-line argument containing directory paths
+    input_paths = sys.argv[1].split(',')
+
+    # Verify if two paths are provided
+    if len(input_paths) != 3:
+        print("Usage: python script.py <path to directory containing CSV files>,<path to second CSV file>,<csv name>")
         exit(1)
 
     # Get the path to the directory containing CSV files from the user
-    input_directory = sys.argv[1]
+    input_directory = input_paths[0].strip()
+    second_input_csv_path = input_paths[1].strip()
+    second_csv = input_paths[2].strip()
 
     # Verify if the input directory exists
     if not os.path.isdir(input_directory):
@@ -62,7 +72,8 @@ def main():
         exit(1)
 
     # Specify the output file path
-    output_csv_path = os.path.join(input_directory, "merge.csv")
+    second_csv_name = os.path.splitext(second_csv)[0]
+    output_csv_path = os.path.join(input_directory, f"{second_csv_name}-merge.csv")
 
     # Remove the existing output.csv file if it exists
     if os.path.exists(output_csv_path):
@@ -86,7 +97,7 @@ def main():
                 # Merge CSV files and append data to the output file
                 with open(output_csv_path, mode='a', newline='') as output_csv:
                     csv_writer = csv.writer(output_csv)
-                    merge_csv_files(subdirectory_path, csv_writer, extracted_data, first_target_directory)
+                    merge_csv_files(subdirectory_path, csv_writer, extracted_data, first_target_directory, second_input_csv_path, second_csv)
 
     print(f"New CSV file '{output_csv_path}' has been created with the extracted values appended.")
 
