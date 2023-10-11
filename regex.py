@@ -23,98 +23,91 @@ except FileNotFoundError:
     print("File 'host_names.txt' not found.")
     host_names = []
 
-# Process command-line arguments for metric files
+# Process command-line arguments
 if len(sys.argv) < 2:
-    print("Usage: python my-script.py metric-file.txt,metric-file.txt ...")
+    print("Usage: python my-script.py input1 input2 ...")
     sys.exit(1)
 
-metric_files = sys.argv[1].split(',')
+inputs = sys.argv[1].split(',')
 processed_files = []  # Store processed file names
 
-for file_name in metric_files:
-    file_name = file_name.strip()
-    process_file = False
-    
-    try:
-        with open(file_name, 'r') as file:
+all_inputs = []  # Store all input items
+
+for input_item in inputs:
+    input_item = input_item.strip()
+
+    if os.path.isfile(input_item) and 'metric' in input_item:
+        with open(input_item, 'r') as file:
+            has_w_pattern = False
+
             for line in file:
                 measurement = line.strip()
                 if re.search(r'\\w\*', measurement):
-                    process_file = True
+                    has_w_pattern = True
                     break
-    except FileNotFoundError:
-        print(f"File '{file_name}' not found.")
-    
-    if process_file:
-        print(f"Processing metric file: {file_name}")
-        unique_measurement_names = set()  # Store unique measurement names for each file
-        try:
-            with open(file_name, 'r') as file:
-                lines = file.readlines()  # Read all lines
-                new_lines = []  # Store lines to overwrite the file
-                
-                for line in lines:
-                    measurement = line.strip()
-                    if re.search(r'\\w\*', measurement):
-                        for host in host_names:
-                            query = f'SELECT max("value") FROM /"{measurement}/" WHERE ("host" =~ /^{host}$/) AND time >= now() - 10s AND time <= now() GROUP BY time(10s) fill(none)'
 
-                            # Construct the curl command
-                            curl_command = f'curl -sG --data-urlencode "db={db_name}" --data-urlencode "q={query}" {url}'
-
-                            # Execute the curl command using os.popen to capture output
-                            try:
-                                output = os.popen(curl_command).read()
-                                response_data = json.loads(output)
-                                for result in response_data["results"]:
-                                    for series in result.get("series", []):
-                                        for entry in series.get("values", []):
-                                            name = series.get("name", "")
-                                            if name:
-                                                unique_measurement_names.add(name)
-
-                            except Exception as e:
-                                print(f"Error executing curl command: {e}")
-                        
-                        new_lines.append(line.strip())  # Keep the line with \w* measurement
-                        
-                    else:
-                        new_lines.append(line.strip())  # Remove extra whitespace
-
-                new_lines.extend(unique_measurement_names)  # Append unique names
-
-                # Write the updated lines back to the file
-                with open(file_name, 'w') as metric_file:
-                    metric_file.write("\n".join(filter(None, new_lines)))
-
-                processed_files.append(file_name)  # Add to processed files list
-        
-        except FileNotFoundError:
-            print(f"File '{file_name}' not found.")
-        
+            if has_w_pattern:
+                # Process metric file
+                print("========================================")
+                print(f"Processing metric file: {input_item}")
+                unique_measurement_names = set()
+                with open(input_item, 'r') as metric_file:
+                    lines = metric_file.readlines()
+                    new_lines = []
+                    for line in lines:
+                        measurement = line.strip()
+                        if re.search(r'\\w\*', measurement):
+                            for host in host_names:
+                                query = f'SELECT max("value") FROM /"{measurement}/" WHERE ("host" =~ /^{host}$/) AND time >= now() - 10s AND time <= now() GROUP BY time(10s) fill(none)'
+                                curl_command = f'curl -sG --data-urlencode "db={db_name}" --data-urlencode "q={query}" {url}'
+                                try:
+                                    output = os.popen(curl_command).read()
+                                    response_data = json.loads(output)
+                                    for result in response_data["results"]:
+                                        for series in result.get("series", []):
+                                            for entry in series.get("values", []):
+                                                name = series.get("name", "")
+                                                if name:
+                                                    unique_measurement_names.add(name)
+                                except Exception as e:
+                                    print(f"Error executing curl command: {e}")
+                        else:
+                            new_lines.append(line.strip())
+                    new_lines.extend(unique_measurement_names)
+                    with open(input_item, 'w') as metric_file:
+                        metric_file.write("\n".join(filter(None, new_lines)))
+                processed_files.append(input_item)
+            else:
+                print("========================================")
+                print(f"Skipping metric file: {input_item} (no processing)")
+    elif 'time' in input_item:
+        # Skip time files
+        print("========================================")
+        print(f"Skipping time file: {input_item}")
     else:
-        print("======================================================")
-        print(f"Skipping metric file: {file_name} (no processing)")
+        # Skip paths or directory names
+        print("========================================")
+        print(f"Skipping path/directory: {input_item}")
 
-# Print processed file names separated by comma
-print("======================================================")
-print("Processed files:",",".join(processed_files))
-print("======================================================")
-# Read files, remove repeated names, and write back
+    all_inputs.append(input_item)
+
+# Print processed input items
+print("========================================")
+print("Processed input items:",",".join(processed_files))
+print("========================================")
+
+# Remove duplicate lines from processed files
 for file_name in processed_files:
-    try:
-        with open(file_name, 'r') as file:
-            lines = file.readlines()
-            unique_lines = list(set(line.strip() for line in lines if not re.search(r'\\w\*', line)))
-        
-        with open(file_name, 'w') as file:
-            file.write("\n".join(filter(None, unique_lines)))
-    except FileNotFoundError:
-        print(f"File '{file_name}' not found.")
+    seen_lines = set()
+    with open(file_name, 'r') as infile:
+        lines = infile.read().splitlines()
+    with open(file_name, 'w') as outfile:
+        for line in lines:
+            line = line.strip()  # Remove leading/trailing whitespace
+            if line not in seen_lines:
+                seen_lines.add(line)
+                outfile.write(line + '\n')
 
-# Create a comma-separated string of processed file names
-processed_file_names = ",".join(processed_files)
-
-# Call the other bash script with the processed file names as an argument
-other_script_command = f'./status-reporter.sh {sys.argv[1]}'
+# Call the other bash script with all the input as arguments
+other_script_command = f'./status-reporter.sh {",".join(all_inputs)}'
 os.system(other_script_command)
