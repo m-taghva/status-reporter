@@ -121,7 +121,7 @@ for host_name in "${HOST_NAMES[@]}"; do
                     ip_address="${ip_port%:*}"
                     port="${ip_port#*:}"
 
-                    line_values="${host_name},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")"  # Include the host name in the line
+                    line_values="${host_name},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")"  
 
                     for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
                         if [[ -f "$metric_file" ]]; then
