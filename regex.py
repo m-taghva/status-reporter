@@ -99,14 +99,16 @@ print("========================================")
 # Remove duplicate lines from processed files
 for file_name in processed_files:
     seen_lines = set()
+    updated_lines = []
     with open(file_name, 'r') as infile:
-        lines = infile.read().splitlines()
+        for line in infile:
+            stripped_line = line.strip()
+            if stripped_line not in seen_lines:
+                seen_lines.add(stripped_line)
+                updated_lines.append(stripped_line)
+
     with open(file_name, 'w') as outfile:
-        for line in lines:
-            line = line.strip()  # Remove leading/trailing whitespace
-            if line not in seen_lines:
-                seen_lines.add(line)
-                outfile.write(line + '\n')
+        outfile.writelines(line + '\n' for line in updated_lines)
 
 # Call the other bash script with all the input as arguments
 other_script_command = f'./status-reporter.sh {",".join(all_inputs)}'
