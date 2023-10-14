@@ -47,7 +47,7 @@ pbar = tqdm(total=total_series, desc="Generating Image")
 for entry in data["results"]:
     for series in entry["series"]:
         metric_name = series["name"]
-        value_column = series["columns"][1]  # Assuming the value column is always at index 1
+        value_column = series["columns"][1]  
         values = series["values"]
         
         # Extract time and value data
