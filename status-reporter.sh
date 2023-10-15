@@ -10,7 +10,7 @@ RESET="\e[0m"
 YELLOW="\033[1;33m"
 END="\033[0m"
 
-CONFIG_FILE="status.conf" # Change this to your file path
+CONFIG_FILE="status.conf" # Change this to your file path of config file
 
 # Define arrays for the extracted values
 IP_PORTS=()
@@ -88,6 +88,7 @@ convert_tehran_to_utc_end() {
     echo "$utc_timestamp_ed"
 }
 
+# Function to convert UTC to Tehran timestamp for csv output
 tehran_time_csv_st() {
     local tehran_timestamp_csv_st="$1"
     local tehran_timestamp_seconds_csv_st=$(date -d "${tehran_timestamp_csv_st}" "+%s")
