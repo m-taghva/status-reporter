@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Set the variables for the script
-HOST_NAME_FILE="host_names.txt"
-IP_PORT_FILE="ip_port_list.txt"
-DATABASE="opentsdb"
-
 # Increase or reduce time (use second)
 START_TIME_SUM="60"
 END_TIME_SUBTRACT="60"
@@ -14,6 +9,43 @@ BOLD="\e[1m"
 RESET="\e[0m"
 YELLOW="\033[1;33m"
 END="\033[0m"
+
+CONFIG_FILE="status.conf" # Change this to your file path
+
+# Define arrays for the extracted values
+IP_PORTS=()
+DATABASES=()
+HOSTS=()
+ALIASES=()
+
+# Read the configuration file
+while IFS= read -r line; do
+    # Skip lines starting with #
+    if [[ $line != \#* ]]; then
+        IFS=',' read -r IP_PORT DATABASE HOSTS_ALIASES <<< "$line"
+        
+        # Split the HOSTS_ALIASES into an array based on ","
+        IFS=',' read -r -a HOSTS_ARRAY <<< "$HOSTS_ALIASES"
+
+        # Loop through the hosts and aliases within a line
+        for host_info in "${HOSTS_ARRAY[@]}"; do
+            IFS='=' read -r -a host_parts <<< "$host_info"        
+            # The first part is the host, and the second part is the alias
+            host="${host_parts[0]}"
+            alias="${host_parts[1]}"
+            IP_PORTS+=("$IP_PORT")
+            DATABASES+=("$DATABASE")
+            HOSTS+=("$host")
+            ALIASES+=("$alias")
+        done
+    fi
+done < "$CONFIG_FILE"
+
+# Remove duplicates from the arrays
+IP_PORTS=($(echo "${IP_PORTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+DATABASES=($(echo "${DATABASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+HOSTS=($(echo "${HOSTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+ALIASES=($(echo "${ALIASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
 # Read metric and time file paths/names from the user
 FILES_ARG="$1"
@@ -38,10 +70,6 @@ for file in "${INPUT_FILES_ARRAY[@]}"; do
         PARENT_DIR="$file"
     fi
 done
-
-# Read host names and IP:PORT pairs into separate arrays
-IFS=$'\n' read -d '' -r -a HOST_NAMES < "${HOST_NAME_FILE}"
-IFS=$'\n' read -d '' -r -a IP_PORTS < "${IP_PORT_FILE}"
 
 # Function to convert Tehran timestamp to UTC
 convert_tehran_to_utc_start() {
@@ -84,7 +112,7 @@ mkdir -p "$OUTPUT_PARENT_DIR"
 output_csv_all="${OUTPUT_PARENT_DIR}/all_hosts_output.csv"
 
 # Initialize the CSV file with the header
-header="Host,Start_Time,End_Time"
+header="Host_alias,Start_Time,End_Time"
 
 for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
     while IFS= read -r metric_name; do
@@ -101,7 +129,9 @@ done
 echo "$header" > "$output_csv_all"
 
 # Loop through each combination of time range, host, IP, PORT, and execute the curl command
-for host_name in "${HOST_NAMES[@]}"; do
+for ((i=0; i<${#HOSTS[@]}; i++)); do
+    alias="${ALIASES[i]}"
+    host="${HOSTS[i]}"
     for time_file in "${TIME_RANGE_FILES[@]}"; do
         # Read time ranges from the time file
         while IFS= read -r line; do
@@ -116,57 +146,58 @@ for host_name in "${HOST_NAMES[@]}"; do
                 start_time_utc=$(convert_tehran_to_utc_start "$start_time_tehran")
                 end_time_utc=$(convert_tehran_to_utc_end "$end_time_tehran")
 
-                for ip_port in "${IP_PORTS[@]}"; do
-                    # Split IP and PORT from the IP:PORT pair
-                    ip_address="${ip_port%:*}"
-                    port="${ip_port#*:}"
+                for database in "${DATABASES[@]}"; do
+                    for ip_port in "${IP_PORTS[@]}"; do
+                        # Split IP and PORT from the IP:PORT pair
+                        ip_address="${ip_port%:*}"
+                        port="${ip_port#*:}"
 
-                    line_values="${host_name},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")"  
+                        line_values="${alias},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")"
 
-                    for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
-                        if [[ -f "$metric_file" ]]; then
-                            while IFS= read -r metric_name; do
-                                # Extract the prefix from the metric filename
-                                metric_prefix=$(basename "$metric_file" _metric_list.txt)
+                        for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
+                            if [[ -f "$metric_file" ]]; then
+                                while IFS= read -r metric_name; do
+                                    # Extract the prefix from the metric filename
+                                    metric_prefix=$(basename "$metric_file" _metric_list.txt)
 
-                                # Construct the curl command with the current metric_name, start time, end time, host, IP address, and port
-                                curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM \\\"${metric_name}\\\" WHERE (\\\"host\\\" =~ /^${host_name}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' fill(none)\""
+                                    # Construct the curl command with the current metric_name, start time, end time, host, IP address, and port
+                                    curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${database}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM \\\"${metric_name}\\\" WHERE (\\\"host\\\" =~ /^${host}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' fill(none)\""
 
-                                # Execute the curl command and get the values
-                                query_result=$(eval "${curl_command}")
-                                values=$(echo "$query_result" | jq -r '.results[0].series[0].values[] | .[1]' 2>/dev/null)
-                                # Append the values to the line_values string
-                                line_values+=",$values"
-                            done < "$metric_file"
-                        else
-                            echo "Metric file not found: $metric_file"
-                        fi
-                    done
+                                    # Execute the curl command and get the values
+                                    query_result=$(eval "${curl_command}")
+                                    values=$(echo "$query_result" | jq -r '.results[0].series[0].values[] | .[1]' 2>/dev/null)
+                                    # Append the values to the line_values string
+                                    line_values+=",$values"
+                                done < "$metric_file"
+                            else
+                                echo "Metric file not found: $metric_file"
+                            fi
+                        done
 
-                    # Append the line_values to the CSV file
-                    echo "$line_values" >> "$output_csv_all"
+                        # Append the line_values to the CSV file
+                        echo "$line_values" >> "$output_csv_all"
 
-                    echo -e "${BOLD}Add metrics to CSV, please wait ...${RESET}"
+                        echo -e "${BOLD}Add metrics to CSV, please wait ...${RESET}"
                     
-                    # Loop through each metric file for the second query
-                    for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
-                        if [[ -f "$metric_file" ]]; then
-                            while IFS= read -r metric_name; do
-                                # Extract the prefix from the metric filename
-                                metric_prefix=$(basename "$metric_file" _metric_list.txt)
+                        # Loop through each metric file for the second query
+                        for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
+                            if [[ -f "$metric_file" ]]; then
+                                while IFS= read -r metric_name; do
+                                    # Extract the prefix from the metric filename
+                                    metric_prefix=$(basename "$metric_file" _metric_list.txt)
 
-                                # Construct the curl command for query 2 with the current metric_name, start time, end time, host, IP address, and port
-                                query2_curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM /"${metric_name}/" WHERE (\\\"host\\\" =~ /^${host_name}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' GROUP BY time(10s) fill(none)\""
+                                    # Construct the curl command for query 2 with the current metric_name, start time, end time, host, IP address, and port
+                                    query2_curl_command="curl -sG 'http://${ip_address}:${port}/query' --data-urlencode \"db=${database}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM /"${metric_name}/" WHERE (\\\"host\\\" =~ /^${host}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' GROUP BY time(10s) fill(none)\""
 
-                                # Get the query2 output and store it in a variable
-                                query2_output=$(eval "$query2_curl_command")
+                                    # Get the query2 output and store it in a variable
+                                    query2_output=$(eval "$query2_curl_command")
 
-                                python3 image-renderer.py "$query2_output" "$host_name" "$PARENT_DIR"
-
-                            done < "$metric_file"
-                        else
-                            echo "Metric file not found: $metric_file"
-                        fi
+                                    python3 image-renderer.py "$query2_output" "$host" "$PARENT_DIR"
+                                done < "$metric_file"
+                            else
+                                echo "Metric file not found: $metric_file"
+                            fi
+                        done
                     done
                 done
             fi
