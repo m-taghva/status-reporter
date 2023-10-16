@@ -57,7 +57,7 @@ TIME_RANGE_FILES=()
 PARENT_DIR=""
 
 echo ""
-echo "========================================"
+echo -e "${YELLOW}========================================${END}"
 
 for file in "${INPUT_FILES_ARRAY[@]}"; do
     # Check if the file name contains "metric" to identify metric files
@@ -221,4 +221,4 @@ echo -ne "Progress: ${YELLOW}|||||||||||||||||||||||||||||||||||||||||||||||||||
 echo ""
 echo -e "${BOLD}CSV and Images are saved in the ${RESET}${YELLOW}'${OUTPUT_PARENT_DIR}'${END}${BOLD} directory${RESET}"
 echo ""
-echo "========================================"
+echo -e "${YELLOW}========================================${END}"
