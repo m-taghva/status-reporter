@@ -1,3 +1,0 @@
-netdata.system.cpu.user
-netdata.system.cpu.system
-netdata.system.cpu.idle
