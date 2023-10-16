@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Increase or reduce time (use second)
-START_TIME_SUM="60"
-END_TIME_SUBTRACT="60"
-
-# For font
+# For font style
 BOLD="\e[1m"
 RESET="\e[0m"
 YELLOW="\033[1;33m"
 END="\033[0m"
 
-CONFIG_FILE="status.conf" # Change this to your file path
+# Increase or reduce time of queries and csv (use second)
+START_TIME_SUM="60"
+END_TIME_SUBTRACT="60"
 
-# Define arrays for the extracted values
+CONFIG_FILE="status.conf" # config file for ip:port,db name,host name=alias Change this to your file path
+
+# Define arrays for the extracted values from config file
 IP_PORTS=()
 DATABASES=()
 HOSTS=()
@@ -20,7 +20,7 @@ ALIASES=()
 
 # Read the configuration file
 while IFS= read -r line; do
-    # Skip lines starting with #
+    # Skip lines starting with # and blank line
     if [[ -n "$line" && "$line" != \#* ]]; then
         IFS=',' read -r IP_PORT DATABASE HOSTS_ALIASES <<< "$line"      
         
@@ -47,7 +47,7 @@ DATABASES=($(echo "${DATABASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 HOSTS=($(echo "${HOSTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 ALIASES=($(echo "${ALIASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-# Read metric and time file paths/names from the user
+# Read metric and time file paths/names and output path from the user
 FILES_ARG="$1"
 # Split the input files by commas
 IFS=',' read -r -a INPUT_FILES_ARRAY <<< "$FILES_ARG"
