@@ -71,6 +71,11 @@ for file in "${INPUT_FILES_ARRAY[@]}"; do
     fi
 done
 
+# If PARENT_DIR is not provided, use the current working directory
+if [ -z "$PARENT_DIR" ]; then
+    PARENT_DIR="."
+fi
+
 # Function to convert Tehran timestamp to UTC
 convert_tehran_to_utc_start() {
     local tehran_timestamp_st="$1"
@@ -209,6 +214,6 @@ done
 echo ""
 echo -ne "Progress: ${YELLOW}|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||${END} 100% \n"
 echo ""
-echo -e "${BOLD}CSV is saved in the ${RESET}${YELLOW}'$output_csv_all'${END}${BOLD} file${RESET}"
+echo -e "${BOLD}CSV and Images are saved in the ${RESET}${YELLOW}'${PARENT_DIR}'${END}${BOLD} directory${RESET}"
 echo ""
 echo "========================================"
