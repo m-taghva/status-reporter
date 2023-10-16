@@ -21,12 +21,12 @@ ALIASES=()
 # Read the configuration file
 while IFS= read -r line; do
     # Skip lines starting with #
-    if [[ $line != \#* ]]; then
-        IFS=',' read -r IP_PORT DATABASE HOSTS_ALIASES <<< "$line"
+    if [[ -n "$line" && "$line" != \#* ]]; then
+        IFS=',' read -r IP_PORT DATABASE HOSTS_ALIASES <<< "$line"      
         
         # Split the HOSTS_ALIASES into an array based on ","
         IFS=',' read -r -a HOSTS_ARRAY <<< "$HOSTS_ALIASES"
-
+        
         # Loop through the hosts and aliases within a line
         for host_info in "${HOSTS_ARRAY[@]}"; do
             IFS='=' read -r -a host_parts <<< "$host_info"        
