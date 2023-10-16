@@ -93,6 +93,7 @@ convert_tehran_to_utc_end() {
     echo "$utc_timestamp_ed"
 }
 
+# Function to convert UTC to Tehran timestamp for csv 
 tehran_time_csv_st() {
     local tehran_timestamp_csv_st="$1"
     local tehran_timestamp_seconds_csv_st=$(date -d "${tehran_timestamp_csv_st}" "+%s")
