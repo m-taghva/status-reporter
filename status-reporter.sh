@@ -158,7 +158,7 @@ for ((i=0; i<${#HOSTS[@]}; i++)); do
                         ip_address="${ip_port%:*}"
                         port="${ip_port#*:}"
 
-                        line_values="${alias},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")"
+                        line_values="${alias},$(tehran_time_csv_st "$start_time_tehran"),$(tehran_time_csv_ed "$end_time_tehran")" # value of csv rows
 
                         for metric_file in "${METRIC_FILES_ARRAY[@]}"; do
                             if [[ -f "$metric_file" ]]; then
