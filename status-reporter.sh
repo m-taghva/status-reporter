@@ -21,7 +21,7 @@ while IFS= read -r line; do
         DATABASES=("$DATABASE")
         # Loop through the hosts and aliases within a line
         for host_info in "${HOSTS_ALIASES[@]}"; do
-            IFS='=' read -r -a host_parts <<< "$host_info"        
+            IFS=':' read -r -a host_parts <<< "$host_info"        
             # The first part is the host, and the second part is the alias
             host="${host_parts[0]}"
             alias="${host_parts[1]}"
