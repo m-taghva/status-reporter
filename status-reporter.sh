@@ -12,12 +12,6 @@ END_TIME_SUBTRACT="60"
 
 CONFIG_FILE="status.conf" # config file for ip:port,db name,host name=alias Change this to your file path
 
-# Define arrays for the extracted values from config file
-IP_PORTS=()
-DATABASES=()
-HOSTS=()
-ALIASES=()
-
 # Read the configuration file
 while IFS= read -r line; do
     # Skip lines starting with # and blank line
