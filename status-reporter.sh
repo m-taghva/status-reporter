@@ -132,6 +132,9 @@ echo "$header" > "$output_csv_all"
 for ((i=0; i<${#HOSTS[@]}; i++)); do
     alias="${ALIASES[i]}"
     host="${HOSTS[i]}"
+    if [ -z "$alias" ]; then
+    alias="$host"
+    fi
     for time_file in "${TIME_RANGE_FILES[@]}"; do
         # Read time ranges from the time file
         while IFS= read -r line; do
