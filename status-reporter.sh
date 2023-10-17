@@ -23,18 +23,14 @@ while IFS= read -r line; do
     # Skip lines starting with # and blank line
     if [[ -n "$line" && "$line" != \#* ]]; then
         IFS=',' read -r IP_PORT DATABASE HOSTS_ALIASES <<< "$line"      
-        
-        # Split the HOSTS_ALIASES into an array based on ","
-        IFS=',' read -r -a HOSTS_ARRAY <<< "$HOSTS_ALIASES"
-        
+        IP_PORTS=("$IP_PORT")
+        DATABASES=("$DATABASE")
         # Loop through the hosts and aliases within a line
-        for host_info in "${HOSTS_ARRAY[@]}"; do
+        for host_info in "${HOSTS_ALIASES[@]}"; do
             IFS='=' read -r -a host_parts <<< "$host_info"        
             # The first part is the host, and the second part is the alias
             host="${host_parts[0]}"
             alias="${host_parts[1]}"
-            IP_PORTS+=("$IP_PORT")
-            DATABASES+=("$DATABASE")
             HOSTS+=("$host")
             ALIASES+=("$alias")
         done
@@ -42,8 +38,6 @@ while IFS= read -r line; do
 done < "$CONFIG_FILE"
 
 # Remove duplicates from the arrays
-IP_PORTS=($(echo "${IP_PORTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-DATABASES=($(echo "${DATABASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 HOSTS=($(echo "${HOSTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 ALIASES=($(echo "${ALIASES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
