@@ -36,7 +36,7 @@ for file in "${INPUT_FILES_ARRAY[@]}"; do
     fi
     if [ -z "$PARENT_DIR" ]; then
            PARENT_DIR="."
-        fi
+    fi
 done
 
 # Function to convert Tehran timestamp to UTC
