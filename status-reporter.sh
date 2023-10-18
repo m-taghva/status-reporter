@@ -145,8 +145,7 @@ while IFS= read -r line_conf; do
                                    query2_curl_command="curl -sG 'http://${IP_PORT}/query' --data-urlencode \"db=${DATABASE}\" --data-urlencode \"q=SELECT ${metric_prefix}(\\\"value\\\") FROM /"${metric_name}/" WHERE (\\\"host\\\" =~ /^${host}$/) AND time >= '${start_time_utc}' AND time <= '${end_time_utc}' GROUP BY time(10s) fill(none)\""
                                    # Get the query2 output and store it in a variable
                                    query2_output=$(eval "$query2_curl_command")
-                                   python3 image-renderer.py "$query2_output" "$host" "$PARENT_DIR"
-
+                                   python3 image-renderer.py "$query2_output" "$host" "$PARENT_DIR"                                
                                 fi
                             done < "$metric_file"
                         else
