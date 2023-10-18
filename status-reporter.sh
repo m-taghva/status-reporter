@@ -112,13 +112,13 @@ while IFS= read -r line_conf; do
         fi
         for time_file in "${TIME_RANGE_FILES[@]}"; do
             # Read time ranges from the time file
-            while IFS= read -r line; do
+            while IFS= read -r line_time; do
                 # Remove extra spaces
-                line="$(echo "$line" | tr -s ' ')"
+                line="$(echo "$line_time" | tr -s ' ')"
                 # Check if the line is not empty (removes blank lines)
-                if [[ -n "$line" && "$line" != \#* ]]; then
+                if [[ -n "$line_time" && "$line_time" != \#* ]]; then
                     # Split the start and end times from the line
-                    IFS=',' read -r start_time_tehran end_time_tehran <<< "$line"
+                    IFS=',' read -r start_time_tehran end_time_tehran <<< "$line_time"
                     # Convert the timestamps to UTC for queries
                     start_time_utc=$(convert_tehran_to_utc_start "$start_time_tehran")
                     end_time_utc=$(convert_tehran_to_utc_end "$end_time_tehran")
