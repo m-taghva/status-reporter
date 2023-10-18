@@ -11,12 +11,12 @@ related to these projects: https://github.com/m-taghva/influxdb.git
         # apt install jq / yum install jq 
           # pip install pytz datetime matplotlib pandas tqdm  
     ======================================================
-    - put your time range in time_rangs_taimestamp.txt like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
-    - write ip and port of influxdb and you data base name and target servers in <br>status.conf</br> like this format: IP:port,DB name,host name:alias
-    - aliases are used in csv file column  
-    - write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex by \\w* in names)
+    - put your time range inside (time_rangs_taimestamp.txt) like this format: 2023-07-31 09:30:00,2023-07-31 10:30:00
+    - write ip and port of influxdb and you data base name and target servers inside (status.conf) like this format: IP:port,DB name,host name:alias (can include # for comment)
+    - aliases are used in csv file column
+    - write selected metric name inside (*_metric_list.txt)
+    - write your metric file like this: netdata.system.cpu.system (measurment line by line - you can use regex by \\w* in names) (can include # for comment)
     - your metric file prefix can use as expressions
-    - you can change DB name on top code of the scripts. 
     - you need to give time and metric files and customize path to query_result for saving outputs.
     ======================================================
     - after complete all files start app with this command:
