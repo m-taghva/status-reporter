@@ -89,7 +89,7 @@ for metric_file in METRIC_FILES_ARRAY:
     with open(metric_file, 'r') as f:
         lines = f.read().splitlines()
         # Extract the prefix from the metric filename
-        metric_prefix = metric_file.split('_')[0]  # Split by '_' and take the first part
+        metric_prefix = os.path.basename(metric_file).split('_')[0]  # Split by '_' and take the first part
         for metric_name in lines:
             # Check if the line is not empty and doesn't start with #
             if metric_name and not metric_name.startswith('#'):
@@ -129,7 +129,7 @@ with open(CONFIG_FILE, 'r') as config_file:
                                             metric_name = metric_name.strip()
                                             # Check if the line is not empty and doesn't start with #
                                             if metric_name and not metric_name.startswith('#'):
-                                                metric_prefix = metric_file.split('_')[0]
+                                                metric_prefix = os.path.basename(metric_file).split('_')[0]
                                                 curl_command = f'curl -sG "http://{IP_PORT}/query" --data-urlencode "db={DATABASE}" --data-urlencode "q=SELECT {metric_prefix}(\\"value\\") FROM \\"{metric_name}\\" WHERE (\\"host\\" =~ /^{host}$/) AND time >= \'{start_time_utc}\' AND time <= \'{end_time_utc}\' fill(none)"'
                                                 query_result = subprocess.getoutput(curl_command)
                                                 values = json.loads(query_result).get('results', [{}])[0].get('series', [{}])[0].get('values', [])
