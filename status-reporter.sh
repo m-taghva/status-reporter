@@ -10,7 +10,7 @@ END="\033[0m"
 START_TIME_SUM="60"
 END_TIME_SUBTRACT="60"
 
-CONFIG_FILE="status.conf" # config file for ip:port,db name,host name=alias Change this to your file path
+CONFIG_FILE="status.conf" # config file for ip:port,db name,host name:alias Change this to your file path
 
 # Read metric and time file paths/names and output path from the user
 FILES_ARG="$1"
